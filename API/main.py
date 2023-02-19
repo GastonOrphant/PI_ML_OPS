@@ -12,7 +12,7 @@ df = pd.read_csv("datasets/movies_titles.csv")
 def read_root():
     return {"Hola!": "Bienvenido!"}
 
-
+#Consigna 1: Película con mayor duración con filtros opcionales de AÑO, PLATAFORMA Y TIPO DE DURACIÓN.
 @app.get("/get_max_duration/{platform}/{year}/{duration_type}")
 def get_max_duration(year: Optional[int] = None, platform: Optional[str] = None, duration_type: Optional[str] = None):
 
@@ -28,7 +28,7 @@ def get_max_duration(year: Optional[int] = None, platform: Optional[str] = None,
     if duration_type is not None and duration_type not in ['min', 'season']:
         return("La duración debe ser una de las siguientes: min, season")
     
-    # Filtramos por solo peliculas (NOTA: Según sli.do este paso no debe de ser realizado)
+    # Filtramos por solo peliculas (NOTA: Según una consulta de sli.do este paso no debe de ser realizado)
     # df_movies = df[df.type == 'movie']
 
     df_movies = df
