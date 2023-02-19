@@ -13,18 +13,9 @@ def read_root():
     return {"Hola!": "Bienvenido!"}
 
 #Consigna 1: Película con mayor duración con filtros opcionales de AÑO, PLATAFORMA Y TIPO DE DURACIÓN.
-@app.get("/get_max_duration/{platform}/{year}/{duration_type}")
-def get_max_duration(year: Optional[int] = None, platform: Optional[str] = None, duration_type: Optional[str] = None):
+@app.get("/get_max_duration")
+async def get_max_duration(year: Optional[int] = None, platform: Optional[str] = None, duration_type: Optional[str] = 'min'):
 
-    # Controlamos que la plataforma ingresada sea correcta
-    platform = platform.lower()
-
-    platforms = ["amazon", "disney", "hulu", "netflix"]
-    if platform not in platforms:
-        return ("Plataforma incorrecta! Debe ingresar una de las siguientes: amazon, disney, hulu, netflix")
-
-    # Controlamos que el duration_type sea valido
-    duration_type = duration_type.lower()
     if duration_type is not None and duration_type not in ['min', 'season']:
         return("La duración debe ser una de las siguientes: min, season")
     
@@ -36,17 +27,27 @@ def get_max_duration(year: Optional[int] = None, platform: Optional[str] = None,
     # Aplicar los filtros OPCIONALES
     if year:
          df_movies = df_movies[df_movies.release_year == year]
+
     if platform:
+        # Pasamos platform a minusculas por si un usuario lo escribe en mayusculas
+        platform = platform.lower()
+        # Controlamos que la plataforma ingresada sea correcta
+        platforms = ["amazon", "disney", "hulu", "netflix"]
+        if platform not in platforms:
+            return ("Plataforma incorrecta! Debe ingresar una de las siguientes: amazon, disney, hulu, netflix")
         df_movies = df_movies[df_movies.platform == platform]
+
     if duration_type:
+        # Controlamos que el duration_type sea valido
+        duration_type = duration_type.lower()
         df_movies = df_movies[df_movies.duration_type == duration_type]
 
     if not df_movies.empty:
-        max_duration_movie = df_movies.sort_values('duration_type', ascending=False).iloc[0]
+        max_duration_movie = df_movies.sort_values('duration_int', ascending=False).iloc[0]['title']
     else:
         return("No se encontró ninguna pelicula con los parametros dados.")    
 
-    return max_duration_movie.to_dict()
+    return {"max_duration_movie": max_duration_movie}
 
 
 # Consigna 2: Cantidad de películas por plataforma con un puntaje mayor a XX en determinado año.
